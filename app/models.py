@@ -10,9 +10,6 @@ class Person(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=True)
     phone = db.Column(db.String(120), unique=True, nullable=True)
 
-    employee = db.relationship("Employee", uselist=False, backref="person")
-    customer = db.relationship("Customer", uselist=False, backref="person")
-
     def __repr__(self):
         return f"<Person {self.first_name} {self.last_name} {self.patronymic}>"
 
@@ -37,10 +34,11 @@ class Customer(db.Model):
     customer_type = db.Column(
         db.Enum(CustomerTypeEnum), default=CustomerTypeEnum.individual, nullable=False
     )
-    owner_id = db.Column(db.Integer, db.ForeignKey("person.id"), nullable=True)
+    person_id = db.Column(db.Integer, db.ForeignKey("person.id"), nullable=True)
     organization_name = db.Column(db.String(50), unique=True, nullable=True)
     payment_account = db.Column(db.Integer, unique=True, nullable=False)
 
+    person = db.relationship("Person", uselist=False, backref="customer")
     projects = db.relationship("Project", backref="customer")
 
     def __repr__(self):
