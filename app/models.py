@@ -1,5 +1,4 @@
 from app import db
-import enum
 
 
 class AddressMixin:
@@ -20,16 +19,8 @@ class Employee(AddressMixin, db.Model):
         return f"<Employee - {repr(self.person)}>"
 
 
-class CustomerTypeEnum(enum.Enum):
-    organization = "organization"
-    individual = "individual"
-
-
 class Customer(AddressMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    customer_type = db.Column(
-        db.Enum(CustomerTypeEnum), default=CustomerTypeEnum.individual, nullable=False
-    )
     customer_name = db.Column(db.String(50), unique=True, nullable=False)
     payment_account = db.Column(db.String(20), unique=True, nullable=False)
 

@@ -1,10 +1,9 @@
 from app.api import bp
 from app import db
 from app.api.serializers import customer_schema
-from flask import request
+from flask import request, jsonify
 from marshmallow import ValidationError
 from app.models import Customer
-from sqlalchemy import or_
 
 
 @bp.route("/customers", methods=["POST"])
@@ -21,21 +20,21 @@ def create_customer():
     result = customer_schema.dump(
         Customer.query.filter(Customer.customer_name == customer.customer_name).first()
     )
-    return result
+    return jsonify(result)
 
 
 @bp.route("/customers", methods=["GET"])
 def get_customers():
     customers = Customer.query.all()
     customers = customer_schema.dump(customers, many=True)
-    return {"customers": customers}
+    return jsonify(customers)
 
 
 @bp.route("/customers/<int:pk>", methods=["GET"])
 def get_customer(pk):
     customer = Customer.query.get_or_404(pk)
     customer = customer_schema.dump(customer)
-    return {"customer": customer}
+    return jsonify(customer)
 
 
 @bp.route("/customers/<int:pk>", methods=["PUT"])
@@ -50,4 +49,12 @@ def update_customer(pk):
     customer.update(**json_data)
     db.session.commit()
     result = customer_schema.dump(customer)
-    return result
+    return jsonify(result)
+
+
+@bp.route("/customers/<int:pk>", methods=["DELETE"])
+def delete_customer(pk):
+    customer = Customer.query.get_or_404(pk)
+    db.session.delete(customer)
+    db.session.commit()
+    return "", 204

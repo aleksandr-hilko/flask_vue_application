@@ -3,17 +3,14 @@ from marshmallow import (
     ValidationError,
     fields,
     post_load,
-    validates,
     validate,
     validates_schema,
 )
 from app.models import Customer
-from app import db
 
 
 class CustomerSchema(Schema):
     id = fields.Int(dump_only=True)
-    customer_type = fields.Str(validate=validate.OneOf(["organization", "individual"]))
     customer_name = fields.Str(validate=validate.Length(min=1))
     payment_account = fields.Str(required=True, validate=validate.Length(min=5, max=20))
 
