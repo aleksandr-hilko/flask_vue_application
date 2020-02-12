@@ -1,36 +1,53 @@
-from marshmallow import Schema, fields, post_load, validates
-from app.models import Customer, Person
-
-
-class PersonSchema(Schema):
-    id = fields.Int(dump_only=True)
-    first_name = fields.Str(required=True)
-    last_name = fields.Str(required=True)
-    patronymic = fields.Str(required=False)
-    email = fields.Str(required=False)
-    phone = fields.Str(required=False)
-
-    @post_load
-    def make_person(self, data, **kwargs):
-        return Person(**data)
+from marshmallow import (
+    Schema,
+    ValidationError,
+    fields,
+    post_load,
+    validates,
+    validate,
+    validates_schema,
+)
+from app.models import Customer
+from app import db
 
 
 class CustomerSchema(Schema):
     id = fields.Int(dump_only=True)
-    customer_type = fields.Str()
-    person = fields.Nested(PersonSchema, required=False)
-    organization_name = fields.Str()
-    payment_account = fields.Int(required=True)
+    customer_type = fields.Str(validate=validate.OneOf(["organization", "individual"]))
+    customer_name = fields.Str(validate=validate.Length(min=1))
+    payment_account = fields.Str(required=True, validate=validate.Length(min=5, max=20))
 
-    @validates("customer_type")
-    def validate_customer_type(self, value):
-        if value not in ["organization", "individual"]:
-            raise ValidationError(
-                "Customer should be either organization or individual."
-            )
+    email = fields.Str(
+        required=False, validate=validate.Email(error="Not a valid email address")
+    )
+    phone = fields.Str(required=False)
+    address = fields.Str(required=False)
+
+    @validates_schema
+    def validate_unique(self, data, **kwargs):
+        customer_name = data.get("customer_name")
+        payment_account = data.get("payment_account")
+        customer_exist = Customer.query.filter(
+            Customer.customer_name == customer_name
+        ).first()
+        payment_exist = Customer.query.filter(
+            Customer.payment_account == payment_account
+        ).first()
+
+        errors = {}
+        if customer_exist:
+            errors["customer_name"] = ["Customer with such a name already exists"]
+        if payment_exist:
+            errors["payment_exist"] = [
+                "Customer with such a payment account already exists"
+            ]
+        if errors:
+            raise ValidationError(errors)
+
+    @post_load
+    def make_user(self, data, **kwargs):
+        return Customer(**data)
 
 
-person_schema = PersonSchema()
-persons_schema = PersonSchema(many=True)
 customer_schema = CustomerSchema()
 customers_schema = CustomerSchema(many=True)

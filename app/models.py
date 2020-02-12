@@ -2,21 +2,17 @@ from app import db
 import enum
 
 
-class Person(db.Model):
+class AddressMixin:
+    email = db.Column(db.String(120), nullable=True)
+    phone = db.Column(db.String(120), nullable=True)
+    address = db.Column(db.String(120), nullable=True)
+
+
+class Employee(AddressMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     patronymic = db.Column(db.String(50), nullable=True)
-    email = db.Column(db.String(120), unique=True, nullable=True)
-    phone = db.Column(db.String(120), unique=True, nullable=True)
-
-    def __repr__(self):
-        return f"<Person {self.first_name} {self.last_name} {self.patronymic}>"
-
-
-class Employee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    person_id = db.Column(db.Integer, db.ForeignKey("person.id"), nullable=False)
     profession = db.Column(db.String(50), nullable=False)
     is_manager = db.Column(db.Boolean, default=False)
 
@@ -29,20 +25,22 @@ class CustomerTypeEnum(enum.Enum):
     individual = "individual"
 
 
-class Customer(db.Model):
+class Customer(AddressMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customer_type = db.Column(
         db.Enum(CustomerTypeEnum), default=CustomerTypeEnum.individual, nullable=False
     )
-    person_id = db.Column(db.Integer, db.ForeignKey("person.id"), nullable=True)
-    organization_name = db.Column(db.String(50), unique=True, nullable=True)
-    payment_account = db.Column(db.Integer, unique=True, nullable=False)
+    customer_name = db.Column(db.String(50), unique=True, nullable=False)
+    payment_account = db.Column(db.String(20), unique=True, nullable=False)
 
-    person = db.relationship("Person", uselist=False, backref="customer")
     projects = db.relationship("Project", backref="customer")
 
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
     def __repr__(self):
-        return self.organization_name or f"<Customer - {repr(self.person)}>"
+        return f"<Customer - {repr(self.customer_name)}>"
 
 
 class Project(db.Model):
