@@ -20,7 +20,7 @@ def create_customer():
     result = customer_schema.dump(
         Customer.query.filter(Customer.customer_name == customer.customer_name).first()
     )
-    return jsonify(result)
+    return jsonify(result), 201
 
 
 @bp.route("/customers", methods=["GET"])
@@ -49,7 +49,7 @@ def update_customer(pk):
     customer.update(**json_data)
     db.session.commit()
     result = customer_schema.dump(customer)
-    return jsonify(result)
+    return jsonify(result), 201
 
 
 @bp.route("/customers/<int:pk>", methods=["DELETE"])

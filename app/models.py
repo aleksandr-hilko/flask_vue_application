@@ -38,9 +38,13 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey("customer.id"), nullable=False)
+    has_contract = db.Column(db.Boolean, default=False, nullable=True)
+    has_plan = db.Column(db.Boolean, default=False, nullable=True)
+    price = db.Column(db.Integer, nullable=True)
+    contract = db.Column(db.String(200), nullable=True)
 
-    start_date = db.Column(db.DateTime, nullable=False)
-    expiration_date = db.Column(db.DateTime, nullable=False)
+    start_date = db.Column(db.DateTime, nullable=True)
+    expiration_date = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return f"<Project - {self.name}>"

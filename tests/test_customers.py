@@ -49,7 +49,7 @@ def test_get_customer(client, customer):
 def test_create_customer(client, create_db):
     data = generate_customer_data()
     resp = client.post("/api/customers", json=data)
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     resp_json = resp.json
     assert resp_json["customer_name"] == data["customer_name"]
     assert resp_json["payment_account"] == data["payment_account"]
@@ -60,7 +60,7 @@ def test_create_customer(client, create_db):
 def test_update_customer(client, customer):
     data = generate_customer_data()
     resp = client.put(f"/api/customers/{customer.id}", json=data)
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     resp = client.get(f"/api/customers/{customer.id}")
     resp_json = resp.json
     assert resp_json["customer_name"] == data["customer_name"]
