@@ -12,6 +12,29 @@ from app import ma
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 
+class ProjectSchema(SQLAlchemyAutoSchema):
+    customer_id = fields.Str(required=True, load_only=True)
+    customer = fields.Function(lambda obj: obj.customer.customer_name, dump_only=True)
+
+    class Meta:
+        model = Project
+        include_fk = True
+
+    @validates("customer_id")
+    def validate_customer_id(self, value):
+        customer = Customer.query.get(value)
+        if not customer:
+            raise ValidationError("Such customer doesn't exist")
+
+    @post_load
+    def make_project(self, data, **kwargs):
+        return Project(**data)
+
+
+project_schema = ProjectSchema()
+projects_schema = ProjectSchema(many=True)
+
+
 class CustomerSchema(Schema):
     id = fields.Int(dump_only=True)
     customer_name = fields.Str(validate=validate.Length(min=1))
@@ -22,6 +45,7 @@ class CustomerSchema(Schema):
     )
     phone = fields.Str(required=False)
     address = fields.Str(required=False)
+    projects = fields.List(fields.Nested(ProjectSchema(only=("name",))))
 
     @validates_schema
     def validate_unique(self, data, **kwargs):
@@ -51,26 +75,3 @@ class CustomerSchema(Schema):
 
 customer_schema = CustomerSchema()
 customers_schema = CustomerSchema(many=True)
-
-
-class ProjectSchema(SQLAlchemyAutoSchema):
-    customer_id = fields.Str(required=True, load_only=True)
-    customer = fields.Function(lambda obj: obj.customer.customer_name, dump_only=True)
-
-    class Meta:
-        model = Project
-        include_fk = True
-
-    @validates("customer_id")
-    def validate_customer_id(self, value):
-        customer = Customer.query.get(value)
-        if not customer:
-            raise ValidationError("Such customer doesn't exist")
-
-    @post_load
-    def make_project(self, data, **kwargs):
-        return Project(**data)
-
-
-project_schema = ProjectSchema()
-projects_schema = ProjectSchema(many=True)

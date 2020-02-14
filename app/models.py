@@ -30,7 +30,7 @@ class Customer(AddressMixin, UpdateModelMixin, db.Model):
     customer_name = db.Column(db.String(50), unique=True, nullable=False)
     payment_account = db.Column(db.String(20), unique=True, nullable=False)
 
-    projects = db.relationship("Project", backref="customer")
+    projects = db.relationship("Project", backref="customer", passive_deletes=True)
 
     def __repr__(self):
         return f"<Customer - {repr(self.customer_name)}>"
@@ -39,7 +39,9 @@ class Customer(AddressMixin, UpdateModelMixin, db.Model):
 class Project(UpdateModelMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey("customer.id"), nullable=False)
+    customer_id = db.Column(
+        db.Integer, db.ForeignKey("customer.id", ondelete="CASCADE"), nullable=False
+    )
     has_contract = db.Column(db.Boolean, default=False, nullable=True)
     has_plan = db.Column(db.Boolean, default=False, nullable=True)
     price = db.Column(db.Integer, nullable=True)
