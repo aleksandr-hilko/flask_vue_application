@@ -28,9 +28,6 @@ def upload_contract(pk):
 
 @bp.route("/projects", methods=["POST"])
 def create_project():
-    import pdb
-
-    pdb.set_trace()
     json_data = request.get_json()
     if not json_data:
         return {"message": "No input data provided"}, 400

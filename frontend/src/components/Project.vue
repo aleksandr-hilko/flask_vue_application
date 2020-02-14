@@ -1,20 +1,30 @@
 <template>
   <tr>
-    <td>{{data.name}}</td>
-    <td>{{data.customer}}</td>
-    <td>{{data.has_contract}}</td>
-    <td>{{data.price}}</td>
-    <td>{{data.has_plan}}</td>
-    <td>{{data.start_date}}</td>
-    <td>{{data.expiration_date}}</td>
+    <td>{{ data.name }}</td>
+    <td>{{ data.customer }}</td>
+    <td v-if="data.price">{{ data.price }}></td>
+    <td v-else>-</td>
+
+    <td v-if="data.has_contract"><i class="fas fa-check"></i></td>
+    <td v-else><i class="fas fa-times"></i></td>
+
+    <td v-if="data.has_plan"><i class="fas fa-check"></i></td>
+    <td v-else><i class="fas fa-times"></i></td>
+
+    <td v-if="data.work_started"><i class="fas fa-check"></i></td>
+    <td v-else><i class="fas fa-times"></i></td>
+
+    <td v-if="data.expiration_date">{{ data.expiration_date }}></td>
+    <td v-else>-</td>
     <td>
       <button type="button" class="btn btn-warning btn-sm">Изменить</button>
       <button
         type="button"
         class="btn btn-danger btn-sm"
-        v-on:click="deleteProject">
+        v-on:click="deleteProject"
+      >
         Удалить
-        </button>
+      </button>
     </td>
   </tr>
 </template>
@@ -24,6 +34,8 @@ import axios from "axios";
 
 export default {
   name: "Project",
+  components: {
+  },
   props: {
     data: {}
   },
@@ -32,19 +44,24 @@ export default {
       const endpoint = `http://localhost:5000/api/projects/${this.data.id}`;
       axios
         .delete(endpoint)
-        .then((res) => {
+        .then(res => {
           // eslint-disable-next-line
           console.log(res);
           this.$emit("deleteProject");
         })
-        .catch((error) => {
+        .catch(error => {
           // eslint-disable-next-line
           console.log(error);
         });
+    }
+  },
+  computed: {
+    uploadURL() {
+      const endpoint = `http://localhost:5000/api/projects/${this.data.id}/upload_contract`;
+      return endpoint;
     }
   }
 };
 </script>
 
-<style>
-</style>
+<style></style>

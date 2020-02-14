@@ -180,7 +180,7 @@ export default {
     },
     getPayload(form) {
       const payload = {};
-      Object.keys(form).forEach(function(field) {
+      Object.keys(form).forEach(function (field) {
         if (form[field]) {
           payload[field] = form[field];
         }

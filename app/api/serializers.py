@@ -13,7 +13,7 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 
 class ProjectSchema(SQLAlchemyAutoSchema):
-    customer_id = fields.Str(required=True, load_only=True)
+    customer_id = fields.Int(required=True, load_only=True)
     customer = fields.Function(lambda obj: obj.customer.customer_name, dump_only=True)
 
     class Meta:

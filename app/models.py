@@ -48,7 +48,7 @@ class Project(UpdateModelMixin, db.Model):
 
     contract = db.Column(db.String(200), nullable=True)
 
-    start_date = db.Column(db.DateTime, nullable=True)
+    work_started = db.Column(db.Boolean, default=False, nullable=True)
     expiration_date = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):

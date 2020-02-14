@@ -4,7 +4,13 @@
       <div class="col-sm-10">
         <br />
         <br />
-        <button type="button" class="btn btn-success btn-sm">Добавить Объект</button>
+        <button
+          type="button"
+          class="btn btn-success btn-sm"
+          v-b-modal.project-modal
+        >
+          Добавить Объект
+        </button>
         <br />
         <br />
         <table class="table table-hover">
@@ -12,51 +18,156 @@
             <tr>
               <th scope="col">Название</th>
               <th scope="col">Заказчик</th>
-              <th scope="col">Договор</th>
               <th scope="col">Цена</th>
-              <th scope="col">Съёмка</th>
-              <th scope="col">Начало работ</th>
+              <th scope="col">Договор подписан</th>
+              <th scope="col">Съёмка сделана</th>
+              <th scope="col">Работы начаты</th>
               <th scope="col">Окончание работ</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             <project
-                v-for="(project, item) in projects"
-                :key="item"
-                :data="project"
-                @deleteProject="handleDeleteProject($event)">
+              v-for="(project, item) in projects"
+              :key="item"
+              :data="project"
+              @deleteProject="handleDeleteProject($event)"
+            >
             </project>
           </tbody>
         </table>
       </div>
     </div>
+    <b-modal
+      ref="addProjectModal"
+      id="project-modal"
+      title="Добавьте новый объект"
+      hide-footer
+    >
+      <b-form @submit="onSubmit" @reset="onReset" class="w-100">
+        <b-form-group
+          id="form-name-group"
+          label="Название:"
+          label-for="form-name-input"
+        >
+          <b-form-input
+            id="form-name-input"
+            type="text"
+            required
+            v-model="addProjectForm.name"
+            placeholder="Название"
+          >
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group
+          id="form-customer-group"
+          label="Заказчик:"
+          label-for="form-customer-select"
+        >
+          <b-form-select
+            id="form-customer-select"
+            v-model="addProjectForm.customerName"
+            :options="customerNames"
+            required
+          ></b-form-select>
+        </b-form-group>
+
+        <b-form-group
+          id="form-price-group"
+          label="Цена:"
+          label-for="form-price-input"
+        >
+          <b-form-input
+            id="form-price-input"
+            type="text"
+            v-model="addProjectForm.price"
+            placeholder="Цена"
+          >
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group id="form-checkboxes-input">
+          <b-form-checkbox-group
+            v-model="addProjectForm.checked"
+            id="checkboxes-4"
+          >
+            <b-form-checkbox value="has_plan">Съёмка готова?</b-form-checkbox>
+            <b-form-checkbox value="work_started"
+              >Работы начаты?</b-form-checkbox
+            >
+            <b-form-checkbox value="has_contract"
+              >Договор составлен?</b-form-checkbox
+            >
+          </b-form-checkbox-group>
+        </b-form-group>
+
+        <b-form-group
+          id="form-end-group"
+          label="Окончание работ:"
+          required
+          label-for="form-end-input"
+        >
+          <b-form-input
+            id="form-end-input"
+            type="date"
+            v-model="addProjectForm.expirationDate"
+            placeholder="Окончание работ"
+          >
+          </b-form-input>
+        </b-form-group>
+
+        <b-button type="submit" variant="primary">Подтвердить</b-button>
+        <b-button type="reset" variant="danger">Отменить</b-button>
+      </b-form>
+    </b-modal>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import Project from '@/components/Project';
+import axios from "axios";
+import Project from "@/components/Project";
+
 
 export default {
-  name: 'ProjectList',
+  name: "ProjectList",
   components: {
-    Project,
+    Project
   },
   data() {
     return {
       projects: [],
+      customers: [],
+      addProjectForm: {
+        name: "",
+        customerName: "",
+        price: "",
+        checked: [],
+        expirationDate: ""
+      }
     };
   },
   methods: {
     getProjects() {
-      const path = 'http://localhost:5000/api/projects';
+      const path = "http://localhost:5000/api/projects";
       axios
         .get(path)
-        .then((res) => {
+        .then(res => {
           this.projects = res.data;
         })
-        .catch((error) => {
+        .catch(error => {
+          // eslint-disable-next-line
+          console.log(error);
+        });
+    },
+    getCustomers() {
+      const path = "http://localhost:5000/api/customers";
+      axios
+        .get(path)
+        .then(res => {
+          this.customers = res.data;
+        })
+        .catch(error => {
           // eslint-disable-next-line
           console.log(error);
         });
@@ -64,15 +175,75 @@ export default {
     handleDeleteProject() {
       this.getProjects();
     },
+    initForm() {
+      this.addProjectForm.name = "";
+      this.addProjectForm.customerName = "";
+      this.addProjectForm.price = "";
+      this.addProjectForm.checked = [];
+      this.addProjectForm.expirationDate = "";
+    },
+    getPayload() {
+      const payload = {
+        customer_id: this.selectedCustomerId,
+        expiration_date: this.addProjectForm.expirationDate
+          ? this.addProjectForm.price
+          : null,
+        has_contract: this.addProjectForm.checked.includes("has_contract"),
+        has_plan: this.addProjectForm.checked.includes("has_plan"),
+        name: this.addProjectForm.name,
+        price: this.addProjectForm.price ? this.addProjectForm.price : null,
+        work_started: this.addProjectForm.checked.includes("work_started")
+      };
+      return payload;
+    },
+    addProject(payload) {
+      const path = "http://localhost:5000/api/projects";
+      axios
+        .post(path, payload)
+        .then(() => {
+          this.getProjects();
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.log(error);
+          this.getProjects();
+        });
+    },
+    onSubmit(evt) {
+      evt.preventDefault();
+      this.$refs.addProjectModal.hide();
+      const payload = this.getPayload();
+      this.addProject(payload);
+      this.initForm();
+    },
+    onReset(evt) {
+      evt.preventDefault();
+      this.$refs.addProjectModal.hide();
+      this.initForm();
+    }
+  },
+  computed: {
+    customerNames() {
+      return this.customers.map(customer => customer.customer_name);
+    },
+    selectedCustomerId() {
+      return this.customers.filter(
+        customer => customer.customer_name === this.addProjectForm.customerName
+      )[0].id;
+    }
   },
   created() {
     this.getProjects();
-  },
+    this.getCustomers();
+  }
 };
 </script>
 
 <style>
-    .container-fluid {
-        margin-left: 10%;
-    }
+.container-fluid {
+  margin-left: 10%;
+}
+.modal-backdrop {
+  opacity: 0.5;
+}
 </style>
