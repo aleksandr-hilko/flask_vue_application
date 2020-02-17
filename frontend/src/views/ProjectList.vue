@@ -23,6 +23,7 @@
               <th scope="col">Съёмка сделана</th>
               <th scope="col">Работы начаты</th>
               <th scope="col">Окончание работ</th>
+              <th scope="col">Договор</th>
               <th></th>
             </tr>
           </thead>
@@ -32,6 +33,7 @@
               :key="item"
               :data="project"
               @deleteProject="handleDeleteProject($event)"
+              @uploadFile="uploadContractId = $event"
             >
             </project>
           </tbody>
@@ -121,23 +123,36 @@
         <b-button type="reset" variant="danger">Отменить</b-button>
       </b-form>
     </b-modal>
+    <b-modal
+      ref="uploadContractModal"
+      id="upload-contract-modal"
+      title="Загрузите договор"
+      hide-footer
+    >
+      <upload-file
+        :contractId="uploadContractId"
+        @closeUploadModal="closeUploadContractModal"
+      />
+    </b-modal>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import Project from "@/components/Project";
-
+import UploadFile from "@/components/UploadFile";
 
 export default {
   name: "ProjectList",
   components: {
-    Project
+    Project,
+    UploadFile
   },
   data() {
     return {
       projects: [],
       customers: [],
+      uploadContractId: "",
       addProjectForm: {
         name: "",
         customerName: "",
@@ -215,6 +230,9 @@ export default {
       const payload = this.getPayload();
       this.addProject(payload);
       this.initForm();
+    },
+    closeUploadContractModal() {
+      this.$refs.uploadContractModal.hide();
     },
     onReset(evt) {
       evt.preventDefault();

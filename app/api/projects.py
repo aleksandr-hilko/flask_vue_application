@@ -7,6 +7,35 @@ from app.models import Project
 import os
 from flask import current_app as app
 import random
+import tempfile
+from drive import drive
+
+
+@bp.route("/projects/<int:pk>/upload_contract2", methods=["POST"])
+def upload_contract_2(pk):
+    """ Upload file and set project name as the uploaded file path. """
+    if "file" in request.files:
+        project = Project.query.get_or_404(pk)
+        file_ = request.files["file"]
+        filename = project.name
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            file_path = os.path.join(tmpdirname, filename)
+            file_.save(file_path)
+
+            drive_file = drive.CreateFile(
+                {"title": filename, "mimeType": file_.mimetype}
+            )
+            drive_file.SetContentFile(file_path)
+            drive_file.Upload()
+            drive_file.InsertPermission(
+                {"type": "anyone", "value": "anyone", "role": "reader"}
+            )
+
+            project.contract = drive_file["alternateLink"]
+            db.session.commit()
+        return "File is uploaded successfully"
+    else:
+        return {"message": "No file is provided"}, 400
 
 
 @bp.route("/projects/<int:pk>/upload_contract", methods=["POST"])
@@ -19,7 +48,7 @@ def upload_contract(pk):
         filename = f"{project.name}.{file_extension}"
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file_.save(file_path)
-        project.contract = file_path
+        project.contract = filename
         db.session.commit()
         return "File is uploaded successfully"
     else:

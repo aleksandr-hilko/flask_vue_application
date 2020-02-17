@@ -17,6 +17,10 @@ _mailinglist
 docs/_build/
 .vscode
 
+#secrets
+credentials.json
+token.pickle
+
 # Coverage reports
 htmlcov/
 .coverage
