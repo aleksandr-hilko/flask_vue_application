@@ -1,16 +1,25 @@
 <template>
   <div class="container">
     <div class="large-12 medium-12 small-12 cell">
-      <label
-        >File
-        <input
-          type="file"
-          id="file"
-          ref="file"
-          v-on:change="handleFileUpload()"
-        />
-      </label>
-      <button v-on:click="submitFile()">Загрузить</button>
+      <input
+        type="file"
+        id="file"
+        ref="file"
+        v-on:change="handleFileUpload()"
+        style="display:none"
+      />
+      <label for="upload">Выберите файл</label>
+
+      <i
+        class="fas fa-folder-open fa-lg"
+        id="upload"
+        onclick="document.getElementById('file').click()"
+      ></i>
+      <p v-if="file">Файл выбран: {{file.name}}</p>
+
+      <button class="btn btn-success btn-sm submit" v-on:click="submitFile()">
+        Загрузить
+      </button>
     </div>
   </div>
 </template>
@@ -21,7 +30,7 @@ import axios from "axios";
 export default {
   name: "UploadFile",
   props: {
-      contractId: ""
+    contractId: ""
   },
   data() {
     return {
@@ -56,3 +65,13 @@ export default {
   }
 };
 </script>
+
+<style>
+.submit {
+  display: block;
+  margin-top: 20px;
+}
+label {
+  margin-right: 10px;
+}
+</style>

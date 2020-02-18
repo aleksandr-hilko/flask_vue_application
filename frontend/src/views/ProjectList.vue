@@ -232,6 +232,7 @@ export default {
       this.initForm();
     },
     closeUploadContractModal() {
+      this.getProjects();
       this.$refs.uploadContractModal.hide();
     },
     onReset(evt) {

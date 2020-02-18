@@ -18,7 +18,7 @@
     <td v-else>-</td>
 
     <td v-if="data.contract">
-      <a :href="this.contractUrl" target="_blank"
+      <a :href="this.data.contract" target="_blank"
         ><i class="far fa-file-excel"></i>
         </a>
     </td>
@@ -67,13 +67,6 @@ export default {
           // eslint-disable-next-line
           console.log(error);
         });
-    }
-  },
-  computed: {
-    contractUrl() {
-      return (
-         this.data.contract
-      );
     }
   }
 };

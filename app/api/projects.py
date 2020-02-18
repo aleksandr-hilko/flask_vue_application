@@ -8,12 +8,13 @@ import os
 from flask import current_app as app
 import random
 import tempfile
-from drive import drive
+from drive import upload_to_google_drive
 
 
-@bp.route("/projects/<int:pk>/upload_contract2", methods=["POST"])
-def upload_contract_2(pk):
-    """ Upload file and set project name as the uploaded file path. """
+@bp.route("/projects/<int:pk>/upload_contract", methods=["POST"])
+def upload_contract(pk):
+    """ Upload file to google drive and 
+        set project model contract field to the link to the uploaded file. """
     if "file" in request.files:
         project = Project.query.get_or_404(pk)
         file_ = request.files["file"]
@@ -22,34 +23,12 @@ def upload_contract_2(pk):
             file_path = os.path.join(tmpdirname, filename)
             file_.save(file_path)
 
-            drive_file = drive.CreateFile(
-                {"title": filename, "mimeType": file_.mimetype}
-            )
-            drive_file.SetContentFile(file_path)
-            drive_file.Upload()
-            drive_file.InsertPermission(
-                {"type": "anyone", "value": "anyone", "role": "reader"}
-            )
-
+            try:
+                drive_file = upload_to_google_drive(file_path, filename, file_.mimetype)
+            except Exception as e:
+                return {"message": f"Failed to upload: {e}"}, 400
             project.contract = drive_file["alternateLink"]
             db.session.commit()
-        return "File is uploaded successfully"
-    else:
-        return {"message": "No file is provided"}, 400
-
-
-@bp.route("/projects/<int:pk>/upload_contract", methods=["POST"])
-def upload_contract(pk):
-    """ Upload file and set project name as the uploaded file path. """
-    if "file" in request.files:
-        project = Project.query.get_or_404(pk)
-        file_ = request.files["file"]
-        file_extension = file_.filename.split(".")[-1]
-        filename = f"{project.name}.{file_extension}"
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file_.save(file_path)
-        project.contract = filename
-        db.session.commit()
         return "File is uploaded successfully"
     else:
         return {"message": "No file is provided"}, 400
