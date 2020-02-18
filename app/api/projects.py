@@ -3,11 +3,12 @@ from app import db
 from app.api.serializers import project_schema, projects_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
-from app.models import Project
+from app.models import Project, Customer
 import os
 from flask import current_app as app
 import random
 import tempfile
+from sqlalchemy import desc, asc
 from drive import upload_to_google_drive
 
 
@@ -56,7 +57,13 @@ def create_project():
 
 @bp.route("/projects", methods=["GET"])
 def get_projects():
-    projects = Project.query.all()
+    order_params = request.args.get("order")
+    if order_params:
+        order_column, order_dir = order_params.split(":")
+        order = asc(order_column) if order_dir == "asc" else desc(order_column)
+        projects = Project.query.join(Customer).order_by(order).all()
+    else:
+        projects = Project.query.all()
     projects = projects_schema.dump(projects, many=True)
     return jsonify(projects)
 

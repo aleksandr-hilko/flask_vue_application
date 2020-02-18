@@ -37,6 +37,7 @@ module.exports = {
     'comma-dangle': 'off',
     'func-names': 'off',
     'prefer-arrow-callback': 'off',
+    'max-len': 'off',
     // disallow reassignment of function parameters
     // disallow parameter object manipulation except for specific exclusions
     'no-param-reassign': ['error', {

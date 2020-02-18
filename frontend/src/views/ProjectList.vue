@@ -13,17 +13,30 @@
         </button>
         <br />
         <br />
-        <table class="table table-hover">
+        <table class="table table-hover table-bordered">
           <thead>
             <tr>
-              <th scope="col">Название</th>
-              <th scope="col">Заказчик</th>
-              <th scope="col">Цена</th>
-              <th scope="col">Договор подписан</th>
-              <th scope="col">Съёмка сделана</th>
-              <th scope="col">Работы начаты</th>
-              <th scope="col">Окончание работ</th>
-              <th scope="col">Договор</th>
+              <th scope="col" v-on:click="switchOrder('id')">
+                # <font-awesome-icon v-if="orderBy === 'id'" :icon="getOrderDirClass()"/>
+              </th>
+              <th scope="col" v-on:click="switchOrder('name')">
+                Название <font-awesome-icon v-if="orderBy === 'name'" :icon="getOrderDirClass()"/>
+              </th>
+              <th scope="col" v-on:click="switchOrder('customer_name')">Заказчик <font-awesome-icon v-if="orderBy === 'customer_name'" :icon="getOrderDirClass()"/></th>
+              <th scope="col" v-on:click="switchOrder('price')">Цена <font-awesome-icon v-if="orderBy === 'price'" :icon="getOrderDirClass()"/></th>
+              <th scope="col" v-on:click="switchOrder('has_contract')">
+                Договор подписан <font-awesome-icon v-if="orderBy === 'has_contract'" :icon="getOrderDirClass()"/>
+              </th>
+              <th scope="col" v-on:click="switchOrder('has_plan')">
+                Съёмка сделана <font-awesome-icon v-if="orderBy === 'has_plan'" :icon="getOrderDirClass()"/>
+              </th>
+              <th scope="col" v-on:click="switchOrder('work_started')">
+                Работы начаты <font-awesome-icon v-if="orderBy === 'work_started'" :icon="getOrderDirClass()"/>
+              </th>
+              <th scope="col" v-on:click="switchOrder('expiration_date')">
+                Окончание работ <font-awesome-icon v-if="orderBy === 'expiration_date'" :icon="getOrderDirClass()"/>
+              </th>
+              <th scope="col" v-on:click="switchOrder('contract')">Договор <font-awesome-icon v-if="orderBy === 'contract'" :icon="getOrderDirClass()"/></th>
               <th></th>
             </tr>
           </thead>
@@ -31,6 +44,7 @@
             <project
               v-for="(project, item) in projects"
               :key="item"
+              :pkey="item + 1"
               :data="project"
               @deleteProject="handleDeleteProject($event)"
               @uploadFile="uploadContractId = $event"
@@ -153,6 +167,8 @@ export default {
       projects: [],
       customers: [],
       uploadContractId: "",
+      orderBy: "",
+      ascOrder: true,
       addProjectForm: {
         name: "",
         customerName: "",
@@ -163,8 +179,23 @@ export default {
     };
   },
   methods: {
-    getProjects() {
-      const path = "http://localhost:5000/api/projects";
+    switchOrder(orderBy) {
+      if (orderBy === this.orderBy) {
+        this.ascOrder = !this.ascOrder;
+      } else {
+        this.orderBy = orderBy;
+        this.ascOrder = true;
+      }
+      const order = this.ascOrder ? "asc" : "desc";
+      this.getProjects(`order=${orderBy}:${order}`);
+    },
+    getOrderDirClass() {
+      return this.ascOrder ? 'sort-up' : 'sort-down';
+    },
+    getProjects(orderBy) {
+      const path = orderBy
+        ? `http://localhost:5000/api/projects?${orderBy}`
+        : "http://localhost:5000/api/projects";
       axios
         .get(path)
         .then(res => {
@@ -201,7 +232,7 @@ export default {
       const payload = {
         customer_id: this.selectedCustomerId,
         expiration_date: this.addProjectForm.expirationDate
-          ? this.addProjectForm.price
+          ? this.addProjectForm.expirationDate
           : null,
         has_contract: this.addProjectForm.checked.includes("has_contract"),
         has_plan: this.addProjectForm.checked.includes("has_plan"),
@@ -209,6 +240,8 @@ export default {
         price: this.addProjectForm.price ? this.addProjectForm.price : null,
         work_started: this.addProjectForm.checked.includes("work_started")
       };
+      // eslint-disable-next-line
+      console.log(payload);
       return payload;
     },
     addProject(payload) {
