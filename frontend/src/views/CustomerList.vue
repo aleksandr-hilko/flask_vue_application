@@ -208,7 +208,8 @@ export default {
 
 <style>
 .container-fluid {
-  margin-left: 10%;
+  margin-left: 2%;
+  width: 1200px;
 }
 .modal-backdrop {
   opacity: 0.5;
