@@ -1,5 +1,9 @@
 <template>
   <div class="container-fluid">
+    <project-filters
+      :customers="customerNames"
+      @filterProjects="handleFilter($event)"
+    ></project-filters>
     <div class="row">
       <div class="col-sm-10">
         <br />
@@ -17,26 +21,68 @@
           <thead>
             <tr>
               <th scope="col" v-on:click="switchOrder('id')">
-                # <font-awesome-icon v-if="orderBy === 'id'" :icon="getOrderDirClass()"/>
+                #
+                <font-awesome-icon
+                  v-if="orderBy === 'id'"
+                  :icon="getOrderDirClass()"
+                />
               </th>
               <th scope="col" v-on:click="switchOrder('name')">
-                Название <font-awesome-icon v-if="orderBy === 'name'" :icon="getOrderDirClass()"/>
+                Название
+                <font-awesome-icon
+                  v-if="orderBy === 'name'"
+                  :icon="getOrderDirClass()"
+                />
               </th>
-              <th scope="col" v-on:click="switchOrder('customer_name')">Заказчик <font-awesome-icon v-if="orderBy === 'customer_name'" :icon="getOrderDirClass()"/></th>
-              <th scope="col" v-on:click="switchOrder('price')">Цена <font-awesome-icon v-if="orderBy === 'price'" :icon="getOrderDirClass()"/></th>
+              <th scope="col" v-on:click="switchOrder('customer_name')">
+                Заказчик
+                <font-awesome-icon
+                  v-if="orderBy === 'customer_name'"
+                  :icon="getOrderDirClass()"
+                />
+              </th>
+              <th scope="col" v-on:click="switchOrder('price')">
+                Цена
+                <font-awesome-icon
+                  v-if="orderBy === 'price'"
+                  :icon="getOrderDirClass()"
+                />
+              </th>
               <th scope="col" v-on:click="switchOrder('has_contract')">
-                Договор подписан <font-awesome-icon v-if="orderBy === 'has_contract'" :icon="getOrderDirClass()"/>
+                Договор подписан
+                <font-awesome-icon
+                  v-if="orderBy === 'has_contract'"
+                  :icon="getOrderDirClass()"
+                />
               </th>
               <th scope="col" v-on:click="switchOrder('has_plan')">
-                Съёмка сделана <font-awesome-icon v-if="orderBy === 'has_plan'" :icon="getOrderDirClass()"/>
+                Съёмка сделана
+                <font-awesome-icon
+                  v-if="orderBy === 'has_plan'"
+                  :icon="getOrderDirClass()"
+                />
               </th>
               <th scope="col" v-on:click="switchOrder('work_started')">
-                Работы начаты <font-awesome-icon v-if="orderBy === 'work_started'" :icon="getOrderDirClass()"/>
+                Работы начаты
+                <font-awesome-icon
+                  v-if="orderBy === 'work_started'"
+                  :icon="getOrderDirClass()"
+                />
               </th>
               <th scope="col" v-on:click="switchOrder('expiration_date')">
-                Окончание работ <font-awesome-icon v-if="orderBy === 'expiration_date'" :icon="getOrderDirClass()"/>
+                Окончание работ
+                <font-awesome-icon
+                  v-if="orderBy === 'expiration_date'"
+                  :icon="getOrderDirClass()"
+                />
               </th>
-              <th scope="col" v-on:click="switchOrder('contract')">Договор <font-awesome-icon v-if="orderBy === 'contract'" :icon="getOrderDirClass()"/></th>
+              <th scope="col" v-on:click="switchOrder('contract')">
+                Договор
+                <font-awesome-icon
+                  v-if="orderBy === 'contract'"
+                  :icon="getOrderDirClass()"
+                />
+              </th>
               <th></th>
             </tr>
           </thead>
@@ -154,13 +200,15 @@
 <script>
 import axios from "axios";
 import Project from "@/components/Project";
+import ProjectFilters from "@/components/ProjectFilters";
 import UploadFile from "@/components/UploadFile";
 
 export default {
   name: "ProjectList",
   components: {
     Project,
-    UploadFile
+    UploadFile,
+    ProjectFilters
   },
   data() {
     return {
@@ -179,7 +227,15 @@ export default {
     };
   },
   methods: {
-    switchOrder(orderBy) {
+    handleFilter(filters) {
+      console.log(filters);
+      this.$router
+        .push({
+          query: filters
+        })
+        .catch(() => {});
+    },
+    getOrderQS(orderBy) {
       if (orderBy === this.orderBy) {
         this.ascOrder = !this.ascOrder;
       } else {
@@ -187,10 +243,14 @@ export default {
         this.ascOrder = true;
       }
       const order = this.ascOrder ? "asc" : "desc";
-      this.getProjects(`order=${orderBy}:${order}`);
+      return `order=${orderBy}:${order}`;
+    },
+    switchOrder(orderBy) {
+      const qs = this.getOrderQS(orderBy);
+      this.getProjects(qs);
     },
     getOrderDirClass() {
-      return this.ascOrder ? 'sort-up' : 'sort-down';
+      return this.ascOrder ? "sort-up" : "sort-down";
     },
     getProjects(orderBy) {
       const path = orderBy
@@ -287,6 +347,19 @@ export default {
   created() {
     this.getProjects();
     this.getCustomers();
+  },
+  async beforeRouteUpdate(to, from, next) {
+    const qs = to.fullPath.replace(to.path, "");
+    console.log(to);
+    console.log(from);
+    const endpoint = `http://localhost:5000/api/projects${qs}`;
+    console.log(endpoint);
+    const res = await axios.get(endpoint);
+    if (res.status === 200) {
+      this.projects = res.data;
+      return next();
+    }
+    return next();
   }
 };
 </script>
@@ -294,6 +367,8 @@ export default {
 <style>
 .container-fluid {
   margin-left: 10%;
+  display: flex;
+  width: 100%;
 }
 .modal-backdrop {
   opacity: 0.5;

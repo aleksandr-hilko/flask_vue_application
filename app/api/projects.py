@@ -57,15 +57,38 @@ def create_project():
 
 @bp.route("/projects", methods=["GET"])
 def get_projects():
-    order_params = request.args.get("order")
+    params = request.args
+    order_params = params.get("order")
+    query = Project.query.join(Customer)
+    query = filter_query(query, params)
     if order_params:
         order_column, order_dir = order_params.split(":")
         order = asc(order_column) if order_dir == "asc" else desc(order_column)
-        projects = Project.query.join(Customer).order_by(order).all()
+        projects = query.order_by(order).all()
     else:
-        projects = Project.query.all()
+        projects = query.all()
     projects = projects_schema.dump(projects, many=True)
     return jsonify(projects)
+
+
+def filter_query(query, params):
+    work_started = params.get("work_started")
+    has_plan = params.get("has_plan")
+    has_contract = params.get("has_contract")
+    min_price = params.get("min_price")
+    max_price = params.get("max_price")
+    customer_name = params.get("customer_name")
+
+    if work_started:
+        query = query.filter(Project.work_started == True)
+    if has_plan:
+        query = query.filter(Project.has_plan == True)
+    if has_contract:
+        query = query.filter(Project.has_contract == True)
+    if customer_name:
+        query = query.filter(Customer.customer_name == customer_name)
+
+    return query
 
 
 @bp.route("/projects/<int:pk>", methods=["GET"])

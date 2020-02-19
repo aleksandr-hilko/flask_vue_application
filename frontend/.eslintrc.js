@@ -38,17 +38,12 @@ module.exports = {
     'func-names': 'off',
     'prefer-arrow-callback': 'off',
     'max-len': 'off',
-    // disallow reassignment of function parameters
-    // disallow parameter object manipulation except for specific exclusions
-    'no-param-reassign': ['error', {
-      props: true,
-      ignorePropertyModificationsFor: [
-        'state', // for vuex state
-        'acc', // for reduce accumulators
-        'e' // for e.returnvalue
-      ]
-    }],
-    // allow optionalDependencies
+    'camelcase': 'off',
+    'no-restricted-syntax': 'off',
+    'guard-for-in': 'off',
+    'no-param-reassign': 'off',
+    'no-return-assign': 'off',
+    'no-console': 'off',
     'import/no-extraneous-dependencies': ['error', {
       optionalDependencies: ['test/unit/index.js']
     }],

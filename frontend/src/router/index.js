@@ -11,6 +11,7 @@ export default new Router({
       path: '/',
       name: 'ProjectList',
       component: ProjectList,
+      props: true
     },
     {
       path: '/customers',
