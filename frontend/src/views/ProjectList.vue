@@ -254,8 +254,8 @@ export default {
     },
     getProjects(orderBy) {
       const path = orderBy
-        ? `http://localhost:5000/api/projects?${orderBy}`
-        : "http://localhost:5000/api/projects";
+        ? `${API_URL}/projects?${orderBy}`
+        : `${API_URL}/projects`;
       axios
         .get(path)
         .then(res => {
@@ -267,7 +267,7 @@ export default {
         });
     },
     getCustomers() {
-      const path = "http://localhost:5000/api/customers";
+      const path = `${API_URL}/customers`;
       axios
         .get(path)
         .then(res => {
@@ -305,7 +305,7 @@ export default {
       return payload;
     },
     addProject(payload) {
-      const path = "http://localhost:5000/api/projects";
+      const path = `${API_URL}/projects`;
       axios
         .post(path, payload)
         .then(() => {
@@ -352,7 +352,7 @@ export default {
     const qs = to.fullPath.replace(to.path, "");
     console.log(to);
     console.log(from);
-    const endpoint = `http://localhost:5000/api/projects${qs}`;
+    const endpoint = `${API_URL}/projects${qs}`;
     console.log(endpoint);
     const res = await axios.get(endpoint);
     if (res.status === 200) {

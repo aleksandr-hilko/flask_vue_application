@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     deleteCustomer() {
-      const endpoint = `http://localhost:5000/api/customers/${this.data.id}`;
+      const endpoint = `${API_URL}/customers/${this.data.id}`;
       axios
         .delete(endpoint)
         .then(res => {
