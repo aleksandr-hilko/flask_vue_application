@@ -144,7 +144,8 @@ export default {
   },
   methods: {
     getCustomers() {
-      const path = `${API_URL}/customers`;
+      const path = `${process.env.VUE_APP_API_URL}/customers`;
+      console.log(path);
       axios
         .get(path)
         .then(res => {
@@ -156,7 +157,7 @@ export default {
         });
     },
     addCustomer(payload) {
-      const path = `${API_URL}/customers`;
+      const path = `${process.env.VUE_APP_API_URL}/customers`;
       axios
         .post(path, payload)
         .then(() => {

@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     deleteCustomer() {
-      const endpoint = `${API_URL}/customers/${this.data.id}`;
+      const endpoint = `${process.env.VUE_APP_API_URL}/customers/${this.data.id}`;
       axios
         .delete(endpoint)
         .then(res => {

@@ -42,7 +42,7 @@ export default {
     submitFile() {
       const formData = new FormData();
       formData.append("file", this.file);
-      const url = `${API_URL}/projects/${this.contractId}/upload_contract`;
+      const url = `${process.env.VUE_APP_API_URL}/projects/${this.contractId}/upload_contract`;
       const vm = this;
       axios
         .post(url, formData, {

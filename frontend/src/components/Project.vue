@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     deleteProject() {
-      const endpoint = `${API_URL}/projects/${this.data.id}`;
+      const endpoint = `${process.env.VUE_APP_API_URL}/projects/${this.data.id}`;
       axios
         .delete(endpoint)
         .then(res => {
