@@ -12,7 +12,6 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 
-
 library.add(faUserSecret);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 

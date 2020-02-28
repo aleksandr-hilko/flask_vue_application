@@ -44,6 +44,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-return-assign': 'off',
     'no-console': 'off',
+    'no-undef': 'off',
     'import/no-extraneous-dependencies': ['error', {
       optionalDependencies: ['test/unit/index.js']
     }],
