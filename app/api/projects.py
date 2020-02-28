@@ -10,9 +10,11 @@ import random
 import tempfile
 from sqlalchemy import desc, asc
 from drive import upload_to_google_drive
+from app.helpers import check_token
 
 
 @bp.route("/projects/<int:pk>/upload_contract", methods=["POST"])
+@check_token
 def upload_contract(pk):
     """ Upload file to google drive and 
         set project model contract field to the link to the uploaded file. """
@@ -36,6 +38,7 @@ def upload_contract(pk):
 
 
 @bp.route("/projects", methods=["POST"])
+@check_token
 def create_project():
     json_data = request.get_json()
     if not json_data:
@@ -56,6 +59,7 @@ def create_project():
 
 
 @bp.route("/projects", methods=["GET"])
+@check_token
 def get_projects():
     params = request.args
     order_params = params.get("order")
@@ -92,6 +96,7 @@ def filter_query(query, params):
 
 
 @bp.route("/projects/<int:pk>", methods=["GET"])
+@check_token
 def get_project(pk):
     project = Project.query.get_or_404(pk)
     project = project_schema.dump(project)
@@ -99,6 +104,7 @@ def get_project(pk):
 
 
 @bp.route("/projects/<int:pk>", methods=["PUT"])
+@check_token
 def update_project(pk):
     project = Project.query.get_or_404(pk)
     json_data = request.get_json()
@@ -114,6 +120,7 @@ def update_project(pk):
 
 
 @bp.route("/projects/<int:pk>", methods=["DELETE"])
+@check_token
 def delete_project(pk):
     project = Project.query.get_or_404(pk)
     db.session.delete(project)

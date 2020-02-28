@@ -4,9 +4,11 @@ from app.api.serializers import customer_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
 from app.models import Customer
+from app.helpers import check_token
 
 
 @bp.route("/customers", methods=["POST"])
+@check_token
 def create_customer():
     json_data = request.get_json()
     if not json_data:
@@ -24,6 +26,7 @@ def create_customer():
 
 
 @bp.route("/customers", methods=["GET"])
+@check_token
 def get_customers():
     customers = Customer.query.all()
     customers = customer_schema.dump(customers, many=True)
@@ -31,6 +34,7 @@ def get_customers():
 
 
 @bp.route("/customers/<int:pk>", methods=["GET"])
+@check_token
 def get_customer(pk):
     customer = Customer.query.get_or_404(pk)
     customer = customer_schema.dump(customer)
@@ -38,6 +42,7 @@ def get_customer(pk):
 
 
 @bp.route("/customers/<int:pk>", methods=["PUT"])
+@check_token
 def update_customer(pk):
     customer = Customer.query.get_or_404(pk)
     json_data = request.get_json()
@@ -53,6 +58,7 @@ def update_customer(pk):
 
 
 @bp.route("/customers/<int:pk>", methods=["DELETE"])
+@check_token
 def delete_customer(pk):
     customer = Customer.query.get_or_404(pk)
     db.session.delete(customer)
