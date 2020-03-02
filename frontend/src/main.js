@@ -12,6 +12,7 @@ import axios from 'axios';
 import Vue from 'vue';
 import App from './App';
 import router from './router';
+import store from './store';
 
 Vue.prototype.$http = axios;
 
@@ -30,6 +31,7 @@ Vue.use(BootstrapVue);
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>',
 });
