@@ -48,6 +48,7 @@ module.exports = {
     'dot-notation': 'off',
     'no-unused-vars': 'off',
     'no-underscore-dangle': 'off',
+    'no-constant-condition': 'off',
     'import/no-extraneous-dependencies': ['error', {
       optionalDependencies: ['test/unit/index.js']
     }],

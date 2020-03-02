@@ -94,6 +94,7 @@
               :data="project"
               @deleteProject="handleDeleteProject($event)"
               @uploadFile="uploadContractId = $event"
+              @clickEditProject="handleEditProject($event)"
             >
             </project>
           </tbody>
@@ -183,6 +184,7 @@
         <b-button type="reset" variant="danger">Отменить</b-button>
       </b-form>
     </b-modal>
+
     <b-modal
       ref="uploadContractModal"
       id="upload-contract-modal"
@@ -216,6 +218,7 @@ export default {
       uploadContractId: "",
       orderBy: "",
       ascOrder: true,
+      edit_project_id: "",
       addProjectForm: {
         name: "",
         customerName: "",
@@ -281,6 +284,7 @@ export default {
       this.getProjects();
     },
     initForm() {
+      this.edit_project_id = "";
       this.addProjectForm.name = "";
       this.addProjectForm.customerName = "";
       this.addProjectForm.price = "";
@@ -316,11 +320,42 @@ export default {
           this.getProjects();
         });
     },
+    editProject(id, payload) {
+      const path = `${process.env.VUE_APP_API_URL}/projects/${id}`;
+      this.$http
+        .put(path, payload)
+        .then(() => {
+          this.getProjects();
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.log(error);
+          this.getProjects();
+        });
+    },
+    handleEditProject(data) {
+      this.$refs.addProjectModal.show();
+      this.edit_project_id = data.id;
+      this.addProjectForm.name = data.name;
+      this.addProjectForm.customerName = data.customer;
+      this.addProjectForm.price = data.price;
+      this.addProjectForm.expirationDate = data.expiration_date;
+      this.addProjectForm.checked = [
+        data.has_contract ? "has_contract" : undefined,
+        data.has_plan ? "has_plan" : undefined,
+        data.work_started ? "work_started" : undefined
+      ];
+      console.log(data);
+    },
     onSubmit(evt) {
       evt.preventDefault();
       this.$refs.addProjectModal.hide();
       const payload = this.getPayload();
-      this.addProject(payload);
+      if (this.edit_project_id) {
+        this.editProject(this.edit_project_id, payload);
+      } else {
+        this.addProject(payload);
+      }
       this.initForm();
     },
     closeUploadContractModal() {

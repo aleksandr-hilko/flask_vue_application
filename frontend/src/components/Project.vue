@@ -6,14 +6,14 @@
     <td v-if="data.price">{{ data.price }}</td>
     <td v-else>-</td>
 
-    <td v-if="data.has_contract"><font-awesome-icon icon="check"/></td>
-    <td v-else><font-awesome-icon icon="times"/></td>
+    <td v-if="data.has_contract"><font-awesome-icon icon="check" /></td>
+    <td v-else><font-awesome-icon icon="times" /></td>
 
-    <td v-if="data.has_plan"><font-awesome-icon icon="check"/></td>
-    <td v-else><font-awesome-icon icon="times"/></td>
+    <td v-if="data.has_plan"><font-awesome-icon icon="check" /></td>
+    <td v-else><font-awesome-icon icon="times" /></td>
 
-    <td v-if="data.work_started"><font-awesome-icon icon="check"/></td>
-    <td v-else><font-awesome-icon icon="times"/></td>
+    <td v-if="data.work_started"><font-awesome-icon icon="check" /></td>
+    <td v-else><font-awesome-icon icon="times" /></td>
 
     <td v-if="data.expiration_date">
       {{ data.expiration_date }}
@@ -22,12 +22,18 @@
 
     <td v-if="data.contract">
       <a :href="data.contract" target="_blank"
-        ><font-awesome-icon icon="file-excel"/>
+        ><font-awesome-icon icon="file-excel" />
       </a>
     </td>
-    <td v-else><font-awesome-icon icon="times"/></td>
+    <td v-else><font-awesome-icon icon="times" /></td>
     <td>
-      <button type="button" class="btn btn-warning btn-sm">Изменить</button>
+      <button
+        type="button"
+        class="btn btn-warning btn-sm"
+        v-on:click="$emit('clickEditProject', data)"
+      >
+        Изменить
+      </button>
       <button
         type="button"
         class="btn btn-danger btn-sm"
