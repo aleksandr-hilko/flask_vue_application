@@ -45,6 +45,7 @@ module.exports = {
     'no-return-assign': 'off',
     'no-console': 'off',
     'no-undef': 'off',
+    'dot-notation': 'off',
     'import/no-extraneous-dependencies': ['error', {
       optionalDependencies: ['test/unit/index.js']
     }],

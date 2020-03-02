@@ -8,9 +8,17 @@ import { faUserSecret } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import BootstrapVue from 'bootstrap-vue';
+import axios from 'axios';
 import Vue from 'vue';
 import App from './App';
 import router from './router';
+
+Vue.prototype.$http = axios;
+
+const token = localStorage.getItem('user-token');
+if (token) {
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = token;
+}
 
 library.add(faUserSecret);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
