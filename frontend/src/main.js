@@ -18,7 +18,7 @@ Vue.prototype.$http = axios;
 
 const token = localStorage.getItem('user-token');
 if (token) {
-  Vue.prototype.$http.defaults.headers.common['Authorization'] = token;
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
 
 library.add(faUserSecret);

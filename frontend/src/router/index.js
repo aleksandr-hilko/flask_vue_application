@@ -9,12 +9,16 @@ import CustomerList from '../views/CustomerList';
 Vue.use(Router);
 
 const router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
       name: 'ProjectList',
       component: ProjectList,
-      props: true
+      props: true,
+      meta: { 
+        requiresAuth: true
+      }
     },
     {
       path: '/login',
@@ -33,20 +37,21 @@ const router = new Router({
       path: '/customers',
       name: 'CustomerList',
       component: CustomerList,
+      meta: { 
+        requiresAuth: true
+      }
     },
   ],
 });
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    console.log("here");
     if (store.getters.isLoggedIn) {
       next();
       return;
     }
     next('/login');
   } else {
-    console.log("here 2");
     next();
   }
 });

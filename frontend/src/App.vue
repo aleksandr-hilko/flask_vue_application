@@ -1,18 +1,28 @@
 <template>
-  <div id='app'>
-    <NavbarComponent/>
-    <router-view/>
+  <div id="app">
+    <NavbarComponent />
+    <router-view />
   </div>
 </template>
 
 <script>
-import NavbarComponent from '@/components/Navbar';
+import NavbarComponent from "@/components/Navbar";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    NavbarComponent,
+    NavbarComponent
   },
+  created() {
+    this.$http.interceptors.response.use(undefined, function (err) {
+      return new Promise(function (resolve, reject) {
+        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+          this.$store.dispatch(logout);
+        }
+        throw err;
+      });
+    });
+  }
 };
 </script>
 

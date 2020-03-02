@@ -198,7 +198,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Project from "@/components/Project";
 import ProjectFilters from "@/components/ProjectFilters";
 import UploadFile from "@/components/UploadFile";
@@ -256,7 +255,7 @@ export default {
       const path = orderBy
         ? `${process.env.VUE_APP_API_URL}/projects?${orderBy}`
         : `${process.env.VUE_APP_API_URL}/projects`;
-      axios
+      this.$http
         .get(path)
         .then(res => {
           this.projects = res.data;
@@ -268,7 +267,7 @@ export default {
     },
     getCustomers() {
       const path = `${process.env.VUE_APP_API_URL}/customers`;
-      axios
+      this.$http
         .get(path)
         .then(res => {
           this.customers = res.data;
@@ -306,7 +305,7 @@ export default {
     },
     addProject(payload) {
       const path = `${process.env.VUE_APP_API_URL}/projects`;
-      axios
+      this.$http
         .post(path, payload)
         .then(() => {
           this.getProjects();
@@ -354,7 +353,7 @@ export default {
     console.log(from);
     const endpoint = `${process.env.VUE_APP_API_URL}/projects${qs}`;
     console.log(endpoint);
-    const res = await axios.get(endpoint);
+    const res = await this.$http.get(endpoint);
     if (res.status === 200) {
       this.projects = res.data;
       return next();

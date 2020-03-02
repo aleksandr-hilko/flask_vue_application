@@ -35,7 +35,7 @@ export default new Vuex.Store({
           method: "POST"
         })
           .then(resp => {
-            const token = resp.data.token;
+            const token = `Bearer ${resp.data.auth_token}`;
             localStorage.setItem("user-token", token);
             axios.defaults.headers.common["Authorization"] = token;
             commit("auth_success", token);
@@ -51,10 +51,24 @@ export default new Vuex.Store({
     logout({ commit }) {
       return new Promise((resolve, reject) => {
         commit("logout");
-        localStorage.removeItem("token");
-        delete axios.defaults.headers.common["Authorization"];
-        resolve();
-        console.log(reject);
+
+        axios({
+          url: `${process.env.VUE_APP_API_URL}/auth/logout`,
+          method: "POST"
+        })
+          .then(resp => {
+            if (resp.status !== "200") {
+              console.log(resp);
+            }
+            localStorage.removeItem("token");
+            delete axios.defaults.headers.common["Authorization"];
+            resolve(resp);
+          })
+          .catch(err => {
+            localStorage.removeItem("token");
+            delete axios.defaults.headers.common["Authorization"];
+            reject(err);
+          });
       });
     }
   },
