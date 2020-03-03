@@ -91,6 +91,10 @@ def filter_query(query, params):
         query = query.filter(Project.has_contract == True)
     if customer_name:
         query = query.filter(Customer.customer_name == customer_name)
+    if min_price:
+        query = query.filter(Project.price >= min_price)
+    if max_price:
+        query = query.filter(Project.price <= max_price)
 
     return query
 

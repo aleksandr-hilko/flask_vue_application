@@ -86,7 +86,7 @@ class User(db.Model):
             payload = {
                 "exp": datetime.datetime.utcnow()
                 + datetime.timedelta(
-                    days=0, seconds=current_app.config.get("JWT_LIFE", 200)
+                    days=0, seconds=current_app.config.get("JWT_LIFE", 600)
                 ),
                 "iat": datetime.datetime.utcnow(),
                 "sub": user_id,

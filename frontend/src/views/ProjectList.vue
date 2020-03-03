@@ -303,8 +303,6 @@ export default {
         price: this.addProjectForm.price ? this.addProjectForm.price : null,
         work_started: this.addProjectForm.checked.includes("work_started")
       };
-      // eslint-disable-next-line
-      console.log(payload);
       return payload;
     },
     addProject(payload) {
@@ -315,7 +313,6 @@ export default {
           this.getProjects();
         })
         .catch(error => {
-          // eslint-disable-next-line
           console.log(error);
           this.getProjects();
         });
